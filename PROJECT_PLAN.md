@@ -46,13 +46,12 @@
 **Field**
 - `id` (UUID)
 - `label` (String)
-- `type` (Enum: TEXT, NUMBER, DATE, SELECT, CHECKBOX, etc.)
+- `type` (User-defined; free-form to allow full control)
 - `required` (boolean)
-- `constraints` (Map<String, String> or typed class)
+- `constraints` (User-defined; free-form to allow full control)
 
 **ValidationRule (optional)**
-- `type` (Enum)
-- `params` (Map)
+- User-defined as needed by the form creator
 
 ---
 
@@ -83,7 +82,7 @@ This allows swapping CLI → service without rewriting domain logic.
 - ✅ Better scalability
 - ❌ Requires dependency and schema
 
-**Recommendation:** Start with JSON for Phase 1. Upgrade to SQLite if search or data volume demands it.
+**Decision:** Use SQLite for persistence.
 
 ---
 
@@ -128,14 +127,14 @@ Form created with ID: <uuid>
 
 ## 9) Milestones
 1. Requirements & data model finalized
-2. Persistence layer built (JSON)
+2. Persistence layer built (SQLite)
 3. CLI CRUD + search
 4. Error handling and validation
 5. Optional service wrapper
 
 ---
 
-## 10) Next Decisions Needed
-- Confirm data model details (fields + constraints)
-- Pick persistence (JSON vs SQLite)
-- Decide if Windows Service needs an API or just scheduled tasks
+## 10) Next Decisions Needed (Resolved)
+- Field types and constraints are user-defined to allow full control by the form creator.
+- Persistence: SQLite.
+- Windows Service expectation: API service.

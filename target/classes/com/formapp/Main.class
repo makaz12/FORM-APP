@@ -1,0 +1,11 @@
+// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
+package com.formapp;
+
+public class Main {
+   public Main() {
+   }
+
+   public static void main(String[] args) {
+      System.out.println("Form App bootstrap");
+   }
+}

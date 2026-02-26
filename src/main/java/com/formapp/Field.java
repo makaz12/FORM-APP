@@ -18,7 +18,7 @@ public class Field {
         this(UUID.randomUUID(), label, type, required, constraints);
     }
 
-    //full constructor
+    // full constructor
      public Field(UUID id, String label, String type, boolean required, String constraints) {
         this.id = Objects.requireNonNull(id, "id is required");
         setLabel(label);
@@ -27,7 +27,7 @@ public class Field {
         setConstraints(constraints);
     }
 
-    //getters and setters
+    // getters and setters
     public UUID getId() {
         return id;
     }

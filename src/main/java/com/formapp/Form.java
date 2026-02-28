@@ -13,17 +13,16 @@ public class Form {
     private  Instant updatedAt;
     
 
-    public Form(String name, String descriotion, ArrayList<Field> fields){
-        this(UUID.randomUUID(), name, descriotion, fields, createdAt, updatedAt);
+    public Form(String name, String description, ArrayList<Field> fields){
+        this(UUID.randomUUID(), name, description, fields, Instant.now(), Instant.now());
     }
 
-    public Form(UUID id, String name, String description, ArrayList<Field> fields, Instant createdAt,
-            Instant updatedAt) {
+    public Form(UUID id, String name, String description, ArrayList<Field> fields, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.fields = fields;
-        createdAt = createdAt;
-        updatedAt = updatedAt;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

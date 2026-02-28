@@ -2,6 +2,9 @@ package com.formapp;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.UUID;
 
 public class Form {
@@ -10,7 +13,7 @@ public class Form {
     private String description;
     private List<Field> fields;
     private final Instant createdAt;
-    private  Instant updatedAt;
+    private Instant updatedAt;
     
     //new-form constructor
 
@@ -21,12 +24,75 @@ public class Form {
     //full construcotr
 
     public Form(UUID id, String name, String description, List<Field> fields, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        setName(name);
-        setDescription(description);
-        setFields(fields);
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.id = Objects.requireNonNull(id, "id is required");
+
+        nameValidation(name);
+        descriptionNormalization(description);
+        fieldsValidation(fields);
+        this.createdAt = Objects.requireNonNull(createdAt, "Creation timestamp required");
+        this.updatedAt = Objects.requireNonNull(updatedAt, "Update timestamp required");
+    }
+
+    //update timestamp method
+    private void touch(){
+        this.updatedAt = Instant.now();
+    }
+
+    //Name validation 
+    //Rejects null and blank names
+    private void nameValidation(String name) {
+        if(name == null || name.isBlank()){
+            throw new IllegalArgumentException("The form must have a name");
+        }
+        this.name = name.trim();
+    }
+
+    //description Normalization:
+    // converts null and/or blank discriptions to empty string
+     private void descriptionNormalization(String description) {
+        if(description ==null || description.isBlank()){
+            this.description = "";
+        }
+        else{
+        this.description = description.trim();
+        }
+    }
+
+    // Field Validation:
+    // reject null, empty and null elements in list of fields
+    private void fieldsValidation(List<Field> fields) {
+        if(fields == null || fields.isEmpty()){
+            throw new IllegalArgumentException("Add at least one field");
+        }
+        else if(fields.contains(null)){
+            throw new IllegalArgumentException("A field cannot be null");
+        }
+        this.fields = new ArrayList<>(fields);
+    }
+
+    private void addField(Field field){
+
+        if (field != null) {
+            fields.add(field);
+        }  else {
+        throw new IllegalArgumentException("Field cannot be empty");
+        }
+        touch();
+    }
+
+    private void removeField(Field field){
+        for(Field toRemove : fields){
+            if(toRemove.getLabel().equals(field.getLabel()) || fields.indexOf(toRemove) == fields.indexOf(field)){
+                fields.remove(toRemove);
+            }
+            else if(toRemove.getLabel() == null){
+                throw new IllegalArgumentException("Null field rejected")
+            }
+            else{
+                throw new IllegalArgumentException("No such field exists");
+            }
+        }
+        touch();
     }
 
     //getters and setters
@@ -39,38 +105,27 @@ public class Form {
         return name;
     }
 
-    public void setName(String name) {
-        if(name == null || name.isBlank()){
-            throw new IllegalArgumentException("The form must have a name");
-        }
-        this.name = name.trim();
+    public void setName(String name){
+        nameValidation(name);
+        touch();
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        if(description ==null || description.isBlank()){
-            this.description = "";
-        }
-        else{
-        this.description = description.trim();
-        }
+    public void setDescription(String descString){
+        descriptionNormalization(descString);
+        touch();
     }
 
     public List<Field> getFields() {
-        return fields;
+        return Collections.unmodifiableList(fields);
     }
 
-    public void setFields(List<Field> fields) {
-        if(fields == null || fields.isEmpty()){
-            throw new IllegalArgumentException("Add at least one field");
-        }
-        else if(fields.contains(null)){
-            throw new IllegalArgumentException("A field cannot be null")
-        }
-        this.fields = fields;
+    public void setFields(List<Field> fields){
+        fieldsValidation(fields);
+        touch();
     }
 
     public Instant getCreatedAt() {
@@ -79,10 +134,6 @@ public class Form {
 
     public Instant getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     

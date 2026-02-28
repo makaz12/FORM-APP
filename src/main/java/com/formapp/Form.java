@@ -70,30 +70,53 @@ public class Form {
         this.fields = new ArrayList<>(fields);
     }
 
-    private void addField(Field field){
-
+    //addField method
+    public void addField(Field field){
+        //adds field if not null
         if (field != null) {
             fields.add(field);
         }  else {
-        throw new IllegalArgumentException("Field cannot be empty");
+        throw new IllegalArgumentException("Field cannot be null");
         }
         touch();
     }
 
-    private void removeField(Field field){
-        for(Field toRemove : fields){
-            if(toRemove.getLabel().equals(field.getLabel()) || fields.indexOf(toRemove) == fields.indexOf(field)){
-                fields.remove(toRemove);
-            }
-            else if(toRemove.getLabel() == null){
-                throw new IllegalArgumentException("Null field rejected")
-            }
-            else{
-                throw new IllegalArgumentException("No such field exists");
-            }
-        }
-        touch();
+    //removeField method
+    public void removeField(Field field) {
+    if (field == null) {
+        throw new IllegalArgumentException("Null field rejected");
     }
+
+    int index = -1;
+    //define index
+    for (int i = 0; i < fields.size(); i++) {
+        if (fields.get(i).getId().equals(field.getId())) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1) {
+        throw new IllegalArgumentException("No such field exists");
+    }
+
+    removeField(index);
+}
+
+public void removeField(int index) {
+    if (index < 0 || index >= fields.size()) {
+        throw new IllegalArgumentException("Invalid field index");
+    }
+    if (fields.size() == 1) {
+        throw new IllegalStateException("Form must have at least one field");
+    }
+
+    fields.remove(index);
+    touch();
+}
+
+
+
 
     //getters and setters
 

@@ -67,6 +67,9 @@ public class Form {
         if(fields == null || fields.isEmpty()){
             throw new IllegalArgumentException("Add at least one field");
         }
+        else if(fields.contains(null)){
+            throw new IllegalArgumentException("A field cannot be null")
+        }
         this.fields = fields;
     }
 

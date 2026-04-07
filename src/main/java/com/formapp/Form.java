@@ -115,9 +115,6 @@ public void removeField(int index) {
     touch();
 }
 
-
-
-
     //getters and setters
 
     public UUID getId() {

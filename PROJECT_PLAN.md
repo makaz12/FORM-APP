@@ -1,12 +1,13 @@
 # Project Planning: Personalized Forms App (Java)
 
 ## 1) Goals & Scope
-**Goal:** Build a Java application to create, edit, search, delete, and display personalized forms. Initial interface is terminal/CLI. Windows Service support is optional/phase 2.
+**Goal:** Build a Java application to create, edit, search, delete, display, and export personalized forms. Initial interface is terminal/CLI. Windows Service support is optional/phase 2.
 
 **In scope (Phase 1):**
 - CRUD for forms
 - Search forms
 - Display form details
+- Export saved forms as tangible HTML files
 - Local persistence
 - CLI interface
 
@@ -24,6 +25,7 @@
 - Search forms by name and description.
 - Delete a form by ID.
 - Display a form by ID with all field details.
+- Generate an HTML file from a saved form definition.
 
 ### Non‑Functional
 - Runs in a terminal without GUI.
@@ -64,7 +66,9 @@ Layered design to keep logic independent from the interface:
    - Use cases: CreateForm, EditForm, DeleteForm, SearchForms, ShowForm
 3. **Persistence Layer**
    - `FormRepository` interface + implementation
-4. **Presentation Layer**
+4. **Rendering / Export Layer**
+   - HTML generator that converts a saved `Form` into a standalone `.html` artifact
+5. **Presentation Layer**
    - CLI parsing and prompts
 
 This allows swapping CLI → service without rewriting domain logic.
@@ -95,6 +99,7 @@ Example command set (final set TBD):
 - `form list`
 - `form show <id>`
 - `form search <query>`
+- `form export-html <id>`
 
 ### Example interaction
 ```
@@ -121,6 +126,7 @@ Form created with ID: <uuid>
 ## 8) Testing Strategy
 - **Unit tests**: validation rules, field creation
 - **Repository tests**: save/load forms
+- **Exporter tests**: verify generated HTML structure and field-type mapping
 - **CLI tests**: parsing and command routing
 
 ---
@@ -128,13 +134,16 @@ Form created with ID: <uuid>
 ## 9) Milestones
 1. Requirements & data model finalized
 2. Persistence layer built (SQLite)
-3. CLI CRUD + search
-4. Error handling and validation
-5. Optional service wrapper
+3. Application/service layer built
+4. HTML export layer built
+5. CLI CRUD + search + export
+6. Error handling and validation
+7. Optional service wrapper
 
 ---
 
 ## 10) Next Decisions Needed (Resolved)
 - Field types and constraints are user-defined to allow full control by the form creator.
 - Persistence: SQLite.
+- First tangible export format: HTML.
 - Windows Service expectation: API service.

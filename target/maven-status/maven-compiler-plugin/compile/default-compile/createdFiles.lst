@@ -1,3 +1,5 @@
-com\formapp\Form.class
 com\formapp\Main.class
 com\formapp\Field.class
+com\formapp\FormService.class
+com\formapp\Form.class
+com\formapp\FormRepository.class

@@ -75,15 +75,4 @@ public class Field {
         }
         
     }
-
-    
-
-    
-
-    
-
-    
-
-    
-    
 }

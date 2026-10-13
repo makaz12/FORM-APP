@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
+import java.nio.file.Path;
 
 public class FormService {
     private static final String[] FIELD_TYPES = {
@@ -23,7 +24,8 @@ public class FormService {
     }
 
     public static void main(String[] args) {
-        new FormService(new InMemoryFormRepository(), new Scanner(System.in)).run(args);
+        Path database = Path.of(System.getProperty("formapp.db", "data/forms.db"));
+        new FormService(new SqliteFormRepository(database), new Scanner(System.in)).run(args);
     }
 
     public void run(String[] args) {
@@ -46,6 +48,7 @@ public class FormService {
             System.out.println("5. Edit form");
             System.out.println("6. Delete form");
             System.out.println("7. Quit");
+            System.out.println("8. Export form as HTML");
 
             try {
                 String choice = prompt("Choose an option").toLowerCase(Locale.ROOT);
@@ -79,6 +82,10 @@ public class FormService {
                     case "exit":
                         System.out.println("Goodbye.");
                         return;
+                    case "8":
+                    case "export-html":
+                        exportHtml(prompt("Form ID or prefix"), null);
+                        break;
                     default:
                         System.out.println("Unknown option.");
                         break;
@@ -96,10 +103,10 @@ public class FormService {
             return;
         }
 
-        Map<String, String> flags = parseFlags(args);
         String command = args[0].toLowerCase(Locale.ROOT);
 
         try {
+            Map<String, String> flags = parseFlags(args);
             switch (command) {
                 case "create":
                     createForm(flags.get("--name"), flags.get("--desc"));
@@ -122,6 +129,10 @@ public class FormService {
                 case "delete":
                     requireArgument(args, 1, "Usage: form delete <id> [--yes]");
                     deleteForm(args[1], flags.containsKey("--yes"));
+                    break;
+                case "export-html":
+                    requireArgument(args, 1, "Usage: form export-html <id> [--output <path>]");
+                    exportHtml(args[1], flags.containsKey("--output") ? Path.of(flags.get("--output")) : null);
                     break;
                 default:
                     System.out.println("Unknown command: " + command);
@@ -285,6 +296,13 @@ public class FormService {
 
     private void showForm(String idInput) {
         printForm(resolveForm(idInput));
+    }
+
+    private void exportHtml(String idInput, Path output) {
+        Form form = resolveForm(idInput);
+        Path destination = output == null ? HtmlFormExporter.defaultPath(form) : output;
+        Path written = new HtmlFormExporter().export(form, destination);
+        System.out.println("Exported HTML to " + written);
     }
 
     private void searchForms(String query) {
@@ -511,44 +529,6 @@ public class FormService {
         System.out.println("  form search <query>");
         System.out.println("  form edit <id> [--name <name>] [--desc <description>]");
         System.out.println("  form delete <id> [--yes]");
-    }
-
-    private static class InMemoryFormRepository implements FormRepository {
-        private final Map<UUID, Form> forms = new LinkedHashMap<>();
-
-        @Override
-        public void save(Form form) {
-            forms.put(form.getId(), form);
-        }
-
-        @Override
-        public Optional<Form> findById(UUID id) {
-            return Optional.ofNullable(forms.get(id));
-        }
-
-        @Override
-        public List<Form> findAll() {
-            return new ArrayList<>(forms.values());
-        }
-
-        @Override
-        public List<Form> search(String query) {
-            String normalized = query == null ? "" : query.toLowerCase(Locale.ROOT);
-            List<Form> matches = new ArrayList<>();
-
-            for (Form form : forms.values()) {
-                String searchableText = (form.getName() + " " + form.getDescription()).toLowerCase(Locale.ROOT);
-                if (searchableText.contains(normalized)) {
-                    matches.add(form);
-                }
-            }
-
-            return matches;
-        }
-
-        @Override
-        public boolean deleteById(UUID id) {
-            return forms.remove(id) != null;
-        }
+        System.out.println("  form export-html <id> [--output <path>]");
     }
 }

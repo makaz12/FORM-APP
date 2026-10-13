@@ -70,3 +70,6 @@ Displays each form with:
 
 ### `form search <query>`
 Case-insensitive substring match across name + description. Output format matches `form list`.
+
+### `form export-html <id> [--output <path>]`
+Writes a standalone UTF-8 HTML form. Without `--output`, the file is written under `exports/` using the form name and ID prefix. For `CHOICE` and `MULTICHOICE`, constraints are comma-separated option labels.
